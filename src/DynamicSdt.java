@@ -3,12 +3,12 @@ import java.util.Vector;
 /**
  * @author xwc
  * @version 1.0
- * @created 17-12-20
+ * @created 17-12-25
  */
-public class Sdt {
+public class DynamicSdt {
     double m_Acc;    //压缩精度
 
-    Sdt(double m_Acc) {
+    DynamicSdt(double m_Acc) {
         this.m_Acc = m_Acc;
     }
 
@@ -20,6 +20,10 @@ public class Sdt {
 
         //当前数据的上斜率和下斜率
         double now_slope1, now_slope2;
+        double E0=this.m_Acc,Emax=E0*1.5,Emin=E0/1.5;
+        double T0=0,T1;
+        double aRadio=0;
+        boolean flag=true;
 
         Point pEnd=undeal.get(0);//保存压缩段结束点
         Point pCurrent;//当前点
@@ -27,12 +31,11 @@ public class Sdt {
         //save the first data
         comp.add(undeal.get(0));
 
-        //double last_stored_time = undeal.get(0).time;  //最近保存数据的时间
         Vector<Point> tempVector=new Vector<>();
         //循环处理数据
-        double t;
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
+            tempVector.add(undeal.get(i));
             pCurrent=undeal.get(i);
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
@@ -43,6 +46,25 @@ public class Sdt {
                 slope2 = now_slope2;
 
             if (slope1 >= slope2) {    //当上门的斜率大于或者等于下门的斜率时，即两门的夹角大于或者等于180度。
+
+                if(flag){//第一次压缩
+                    T0=tempVector.size();
+                    flag=false;
+                }else{//第二次压缩,调整压缩参数
+                    T1=tempVector.size();
+                    aRadio=(T1-T0)/T0;
+                    E0=E0/(1+aRadio);
+                    if(E0>=Emax||E0<=Emin){
+                        if(E0>=Emax){
+                            E0=Emax;
+                        }else{
+                            E0=Emin;
+                        }
+                    }
+                    this.m_Acc=E0;
+                    T0=T1;
+                }
+                System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
                 tempVector.clear();
                 //保存前一个节点
                 comp.add(undeal.get(i - 1));
@@ -52,7 +74,7 @@ public class Sdt {
                 slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
                 slope2 = (pCurrent.y - pEnd.y + m_Acc) / (pCurrent.time - pEnd.time);
             }
-            tempVector.add(undeal.get(i));
+           // tempVector.add(undeal.get(i));
             //  last_read_data = data;
         }
 

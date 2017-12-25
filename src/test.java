@@ -29,28 +29,24 @@ public class test {
     public static void sdfCal(double m_acc) {
         int i = 0;
         Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
-
-        double maxX = 0.0;
-        double minX = 0.0;
-        double maxY = 0.0;
-        double minY = 0.0;
         double PI = 3.14159265358979323846;
-        for (double x_val = -2 * PI; x_val < 128 * PI; ++i, x_val += 0.2) {
+
+        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
             double sin_y = Math.sin(x_val / 4);
             undeal.add(new Point(i, sin_y));
-            if (maxX < i)
-                maxX = i;
-            else if (i < minX)
-                minX = i;
-            if (maxY < sin_y)
-                maxY = sin_y;
-            else if (sin_y < minY)
-                minY = sin_y;
         }
+        /* sin(x)
+        //y=-100*sinc ( 0.05*pi*x ) +100
+        for(double x_val=1.5;x_val<1500;x_val+=0.15,++i) {
+            double sin_y = -100 * Math.sin(x_val * 0.05 * PI) / (x_val * 0.05 * PI);
+            undeal.add(new Point(i, sin_y));
+        }
+        */
         int num = undeal.size();
         System.out.println("undeal size:"+num);
         //Sdt nsdt=new Sdt(m_acc);
-        LinearSdt nsdt=new LinearSdt(m_acc);
+        //LinearSdt nsdt=new LinearSdt(m_acc);
+        DynamicSdt nsdt=new DynamicSdt(m_acc);
         nsdt.compress(undeal, compress);
         num = compress.size();
         System.out.println("deal size:"+num);
