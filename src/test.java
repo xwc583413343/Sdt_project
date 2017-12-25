@@ -18,7 +18,7 @@ public class test {
             sum += p;
         }
         double mean = sum / resultSet.size(); //均值
-        Double accum = 0.0;
+        double accum=0;
         for (Double d : resultSet) {
             accum += (d - mean) * (d - mean);
         }
@@ -31,7 +31,7 @@ public class test {
         Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
         double PI = 3.14159265358979323846;
 
-        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
+        for (double x_val = -2 * PI; x_val < 2 * PI; ++i, x_val += 0.2) {
             double sin_y = Math.sin(x_val / 4);
             undeal.add(new Point(i, sin_y));
         }
@@ -46,7 +46,8 @@ public class test {
         System.out.println("undeal size:"+num);
         //Sdt nsdt=new Sdt(m_acc);
         //LinearSdt nsdt=new LinearSdt(m_acc);
-        DynamicSdt nsdt=new DynamicSdt(m_acc);
+        //DynamicSdt nsdt=new DynamicSdt(m_acc);
+        MixSdt nsdt=new MixSdt(m_acc);
         nsdt.compress(undeal, compress);
         num = compress.size();
         System.out.println("deal size:"+num);
@@ -60,7 +61,7 @@ public class test {
     }
 
     public static void main(String[] args) {
-        double m_acc =0.1;
+        double m_acc=0.01;
         sdfCal(m_acc);
     }
 

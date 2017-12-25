@@ -5,10 +5,10 @@ import java.util.Vector;
  * @version 1.0
  * @created 17-12-25
  */
-public class DynamicSdt {
+public class MixSdt {
     double m_Acc;    //压缩精度
 
-    DynamicSdt(double m_Acc) {
+    MixSdt(double m_Acc) {
         this.m_Acc = m_Acc;
     }
 
@@ -22,20 +22,23 @@ public class DynamicSdt {
         double now_slope1, now_slope2;
         double E0=this.m_Acc,Emax=E0*1.5,Emin=E0/1.5;
         double T0=0,T1;
-        double aRadio=0;
-        boolean flag=true;
-
+        double aRadio;
+        Point pBegin=undeal.get(0);//保存压缩区间段开始点
         Point pEnd=undeal.get(0);//保存压缩段结束点
         Point pCurrent;//当前点
+        //存储压缩区间临时点
+        Vector<Point> pTempVector=new Vector<>();
+        pTempVector.add(pBegin);
+        Double a0=0.0,b0=0.0,a1=0.0,b1=0.0;
+
+        boolean flag=true;
 
         //save the first data
         comp.add(undeal.get(0));
-
-        Vector<Point> tempVector=new Vector<>();
         //循环处理数据
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
-            tempVector.add(undeal.get(i));
+           // pTempVector.add(undeal.get(i));
             pCurrent=undeal.get(i);
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
@@ -46,13 +49,35 @@ public class DynamicSdt {
                 slope2 = now_slope2;
 
             if (slope1 >= slope2) {    //当上门的斜率大于或者等于下门的斜率时，即两门的夹角大于或者等于180度。
-                //tempVector.clear();
 
+                double[] yArray=new double[pTempVector.size()];
+                double[] timeArray=new double[pTempVector.size()];
+                int j=0;
+                for(Point p:pTempVector){
+                    yArray[j]=p.y;
+                    timeArray[j]=p.time;
+                    j++;
+                }
                 if(flag){//第一次压缩
-                    T0=tempVector.size();
+                    T0=pTempVector.size();
+                    //L0
+                    a0=LinearFunc.getA(timeArray,yArray);
+                    b0=LinearFunc.getB(timeArray,yArray);
+                    comp.add(new Point((int)timeArray[0],a0*timeArray[0]+b0));
                     flag=false;
                 }else{//第二次压缩,调整压缩参数
-                    T1=tempVector.size();
+                    //L1
+                    a1=LinearFunc.getA(timeArray,yArray);
+                    b1=LinearFunc.getB(timeArray,yArray);
+                    double timeTemp=(b0-b1)/(a1-a0);
+                    double yTemp=a0*timeTemp+b0;
+                    //pX
+                    if(((pBegin.time)<timeTemp)&&(timeTemp<undeal.get(i-1).time)){//2.1 判断交点time是否在pBegin.x～(i-1)
+                        comp.add(new Point((int)timeTemp,yTemp));
+                    }else{
+                        comp.add(pEnd);
+                    }
+                    T1=pTempVector.size();
                     aRadio=(T1-T0)/T0;
                     E0=E0/(1+aRadio);
                     if(E0>=Emax||E0<=Emin){
@@ -64,21 +89,41 @@ public class DynamicSdt {
                     }
                     this.m_Acc=E0;
                     T0=T1;
+                    pBegin=pEnd;
+                    a0=a1;
+                    b0=b1;
+                    System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
                 }
-                System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
-                tempVector.clear();
+                pTempVector.clear();
                 //保存前一个节点
-                comp.add(undeal.get(i - 1));
+                //comp.add(undeal.get(i - 1));
                 pEnd=undeal.get(i-1);//修改最近保存数据时间点
 
                 //初始化两扇门为当前点与上个点的斜率
                 slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
                 slope2 = (pCurrent.y - pEnd.y + m_Acc) / (pCurrent.time - pEnd.time);
             }
-           // tempVector.add(undeal.get(i));
+            pTempVector.add(pCurrent);
             //  last_read_data = data;
         }
-
+        //最后一个区间段计算交点
+        double[] yArray=new double[pTempVector.size()];
+        double[] timeArray=new double[pTempVector.size()];
+        int j=0;
+        for(Point p:pTempVector){
+            yArray[j]=p.y;
+            timeArray[j]=p.time;
+            j++;
+        }
+        a1=LinearFunc.getA(timeArray,yArray);
+        b1=LinearFunc.getB(timeArray,yArray);
+        double timeTemp=(b0-b1)/(a1-a0);
+        double yTemp=a0*timeTemp+b0;
+        if(((pBegin.time)<timeTemp)&&(timeTemp<undeal.get(i-1).time)){//2.1 判断交点time是否在pBegin.x～(i-1)
+            comp.add(new Point((int)timeTemp,yTemp));
+        }else{
+            comp.add(pEnd);
+        }
         // sava end point
         comp.add(undeal.get(i - 1));
     }
