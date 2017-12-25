@@ -9,8 +9,6 @@ public class LinearSdt {
 
     double m_Acc;    //压缩精度
 
-
-
     LinearSdt(double m_Acc) {
         this.m_Acc = m_Acc;
     }
