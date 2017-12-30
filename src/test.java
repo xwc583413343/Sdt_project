@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Vector;
 
 /**
@@ -30,24 +31,26 @@ public class test {
         int i = 0;
         Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
         double PI = 3.14159265358979323846;
-
+        /* sin(x)
         for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
             double sin_y = Math.sin(x_val / 4);
             undeal.add(new Point(i, sin_y));
         }
-        /* sin(x)
+        */
         //y=-100*sinc ( 0.05*pi*x ) +100
-        for(double x_val=1.5;x_val<1500;x_val+=0.15,++i) {
-            double sin_y = -100 * Math.sin(x_val * 0.05 * PI) / (x_val * 0.05 * PI);
+        for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
+            double sin_y = -100 * Math.sin(x_val/4) / (x_val/4);
             undeal.add(new Point(i, sin_y));
         }
-        */
+
         int num = undeal.size();
         //System.out.println("undeal size:"+num);
-        Sdt nsdt=new Sdt(m_acc);
-        //LinearSdt nsdt=new LinearSdt(m_acc);
-        //DynamicSdt nsdt=new DynamicSdt(m_acc);
-       // MixSdt nsdt=new MixSdt(m_acc);
+        //Sdt nsdt=new Sdt(m_acc);
+        LinearSdt nsdt=new LinearSdt(m_acc);
+       // DynamicSdt nsdt=new DynamicSdt(m_acc);
+        //DecimalFormat    df   = new DecimalFormat("######0.00");
+        DecimalFormat df=new DecimalFormat("####0.000000");
+        //MixSdt nsdt=new MixSdt(m_acc);
         nsdt.compress(undeal, compress);
 
         System.out.println("原生数据量为:" + undeal.size() +"   压缩后数据量为:" +compress.size() );
@@ -55,7 +58,7 @@ public class test {
         nsdt.uncompress(compress, dealt);
 
         double stdev = caculVariance(undeal, dealt);
-        System.out.println("压缩误差:" +stdev );
+        System.out.println("压缩误差:" +df.format(stdev) );
         System.out.println();
 
     }

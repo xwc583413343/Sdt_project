@@ -61,12 +61,12 @@ public class Sdt {
     }
 
     void uncompress(Vector<Point> comp, Vector<Point> dealt) {
-        Point a = new Point(comp.get(0).time,comp.get(0).y),b=new Point();
+        Point a = (Point) comp.get(0).clone(),b=new Point();
         int i, size = comp.size();
         for (i = 1; i < size; ++i) {
             b = comp.get(i);
             //Step.1
-            dealt.add(new Point(a.time,a.y));
+            dealt.add((Point)a.clone());
 
             //Step.2
             if (a.time + 1 != b.time) {
@@ -80,6 +80,6 @@ public class Sdt {
             a.time = b.time;
             a.y = b.y;
         }
-        dealt.add(new Point(b.time,b.y));
+        dealt.add((Point)b.clone());
     }
 }

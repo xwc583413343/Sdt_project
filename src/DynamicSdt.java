@@ -25,18 +25,18 @@ public class DynamicSdt {
         double aRadio=0;
         boolean flag=true;
 
-        Point pEnd=undeal.get(0);//保存压缩段结束点
+        Point pEnd=undeal.get(0).clone();//保存压缩段结束点
         Point pCurrent;//当前点
 
         //save the first data
-        comp.add(undeal.get(0));
+        comp.add(undeal.get(0).clone());
 
         Vector<Point> tempVector=new Vector<>();
         //循环处理数据
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
-            tempVector.add(undeal.get(i));
-            pCurrent=undeal.get(i);
+            tempVector.add(undeal.get(i).clone());
+            pCurrent=undeal.get(i).clone();
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
                 slope1 = now_slope1;
@@ -65,11 +65,11 @@ public class DynamicSdt {
                     this.m_Acc=E0;
                     T0=T1;
                 }
-                System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
+               // System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
                 tempVector.clear();
                 //保存前一个节点
-                comp.add(undeal.get(i - 1));
-                pEnd=undeal.get(i-1);//修改最近保存数据时间点
+                comp.add(undeal.get(i - 1).clone());
+                pEnd=undeal.get(i-1).clone();//修改最近保存数据时间点
 
                 //初始化两扇门为当前点与上个点的斜率
                 slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
@@ -80,7 +80,7 @@ public class DynamicSdt {
         }
 
         // sava end point
-        comp.add(undeal.get(i - 1));
+        comp.add(undeal.get(i - 1).clone());
     }
 
     void uncompress(Vector<Point> comp, Vector<Point> dealt) {

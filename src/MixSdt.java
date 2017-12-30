@@ -23,23 +23,23 @@ public class MixSdt {
         double E0=this.m_Acc,Emax=E0*1.5,Emin=E0/1.5;
         double T0=0,T1;
         double aRadio;
-        Point pBegin=undeal.get(0);//保存压缩区间段开始点
-        Point pEnd=undeal.get(0);//保存压缩段结束点
+        Point pBegin=undeal.get(0).clone();//保存压缩区间段开始点
+        Point pEnd=undeal.get(0).clone();//保存压缩段结束点
         Point pCurrent;//当前点
         //存储压缩区间临时点
         Vector<Point> pTempVector=new Vector<>();
-        pTempVector.add(pBegin);
+        pTempVector.add(pBegin.clone());
         Double a0=0.0,b0=0.0,a1=0.0,b1=0.0;
 
         boolean flag=true;
 
         //save the first data
-        comp.add(undeal.get(0));
+        comp.add(undeal.get(0).clone());
         //循环处理数据
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
            // pTempVector.add(undeal.get(i));
-            pCurrent=undeal.get(i);
+            pCurrent=undeal.get(i).clone();
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
                 slope1 = now_slope1;
@@ -89,21 +89,21 @@ public class MixSdt {
                     }
                     this.m_Acc=E0;
                     T0=T1;
-                    pBegin=pEnd;
+                    pBegin=pEnd.clone();
                     a0=a1;
                     b0=b1;
-                    System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
+                   // System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
                 }
                 pTempVector.clear();
                 //保存前一个节点
                 //comp.add(undeal.get(i - 1));
-                pEnd=undeal.get(i-1);//修改最近保存数据时间点
+                pEnd=undeal.get(i-1).clone();//修改最近保存数据时间点
 
                 //初始化两扇门为当前点与上个点的斜率
                 slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
                 slope2 = (pCurrent.y - pEnd.y + m_Acc) / (pCurrent.time - pEnd.time);
             }
-            pTempVector.add(pCurrent);
+            pTempVector.add(pCurrent.clone());
             //  last_read_data = data;
         }
         //最后一个区间段计算交点
@@ -122,10 +122,10 @@ public class MixSdt {
         if(((pBegin.time)<timeTemp)&&(timeTemp<undeal.get(i-1).time)){//2.1 判断交点time是否在pBegin.x～(i-1)
             comp.add(new Point((int)timeTemp,yTemp));
         }else{
-            comp.add(pEnd);
+            comp.add(pEnd.clone());
         }
         // sava end point
-        comp.add(undeal.get(i - 1));
+        comp.add(undeal.get(i - 1).clone());
     }
 
     void uncompress(Vector<Point> comp, Vector<Point> dealt) {
