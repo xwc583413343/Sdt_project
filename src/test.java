@@ -1,3 +1,4 @@
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Vector;
 
@@ -36,12 +37,15 @@ public class test {
             double sin_y = Math.sin(x_val / 4);
             undeal.add(new Point(i, sin_y));
         }
-        */
+
         //y=-100*sinc ( 0.05*pi*x ) +100
         for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
             double sin_y = -100 * Math.sin(x_val/4) / (x_val/4);
             undeal.add(new Point(i, sin_y));
         }
+        */
+        File file=new File("/Users/weichaoxie/IdeaProjects/Sdt_project/20170701-20171004.xls");
+        undeal=GetExcelInfo.readExcel(file);
 
         int num = undeal.size();
         //System.out.println("undeal size:"+num);
@@ -64,6 +68,7 @@ public class test {
     }
 
     public static void main(String[] args) {
+
         double m_acc=0.01;
         double m_accArray[]={1,0.5,0.3,0.1,0.05,0.03,0.01};
         for(int i=0;i<m_accArray.length;i++){
@@ -71,7 +76,6 @@ public class test {
             sdfCal(m_accArray[i]);
 
         }
-
     }
 
 
