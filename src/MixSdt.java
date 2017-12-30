@@ -129,12 +129,12 @@ public class MixSdt {
     }
 
     void uncompress(Vector<Point> comp, Vector<Point> dealt) {
-        Point a = comp.get(0), b=new Point();
+        Point a = new Point(comp.get(0).time,comp.get(0).y),b=new Point();
         int i, size = comp.size();
         for (i = 1; i < size; ++i) {
             b = comp.get(i);
             //Step.1
-            dealt.add(a);
+            dealt.add(new Point(a.time,a.y));
 
             //Step.2
             if (a.time + 1 != b.time) {
@@ -148,6 +148,6 @@ public class MixSdt {
             a.time = b.time;
             a.y = b.y;
         }
-        dealt.add(b);
+        dealt.add(new Point(b.time,b.y));
     }
 }

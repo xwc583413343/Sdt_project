@@ -31,7 +31,7 @@ public class test {
         Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
         double PI = 3.14159265358979323846;
 
-        for (double x_val = -2 * PI; x_val < 2 * PI; ++i, x_val += 0.2) {
+        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
             double sin_y = Math.sin(x_val / 4);
             undeal.add(new Point(i, sin_y));
         }
@@ -43,26 +43,34 @@ public class test {
         }
         */
         int num = undeal.size();
-        System.out.println("undeal size:"+num);
-        //Sdt nsdt=new Sdt(m_acc);
+        //System.out.println("undeal size:"+num);
+        Sdt nsdt=new Sdt(m_acc);
         //LinearSdt nsdt=new LinearSdt(m_acc);
         //DynamicSdt nsdt=new DynamicSdt(m_acc);
-        MixSdt nsdt=new MixSdt(m_acc);
+       // MixSdt nsdt=new MixSdt(m_acc);
         nsdt.compress(undeal, compress);
-        num = compress.size();
-        System.out.println("deal size:"+num);
 
         System.out.println("原生数据量为:" + undeal.size() +"   压缩后数据量为:" +compress.size() );
         System.out.println("压缩比率:" +(float) undeal.size() / compress.size());
         nsdt.uncompress(compress, dealt);
+
         double stdev = caculVariance(undeal, dealt);
         System.out.println("压缩误差:" +stdev );
+        System.out.println();
 
     }
 
     public static void main(String[] args) {
         double m_acc=0.01;
-        sdfCal(m_acc);
+        double m_accArray[]={1,0.5,0.3,0.1,0.05,0.03,0.01};
+        for(int i=0;i<m_accArray.length;i++){
+            System.out.println("m_acc:"+m_accArray[i]);
+            sdfCal(m_accArray[i]);
+
+        }
+
     }
+
+
 
 }
