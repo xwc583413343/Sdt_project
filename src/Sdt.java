@@ -5,14 +5,14 @@ import java.util.Vector;
  * @version 1.0
  * @created 17-12-20
  */
-public class Sdt {
+public class Sdt implements FatherSdt{
     double m_Acc;    //压缩精度
 
     Sdt(double m_Acc) {
         this.m_Acc = m_Acc;
     }
 
-    void compress(Vector<Point> undeal, Vector<Point> comp) {
+    public void compress(Vector<Point> undeal, Vector<Point> comp) {
         //上门和下门，初始时门时关着的。
         double MAX_DOUBLE = 1.79769e+308;
         double slope1 = -MAX_DOUBLE;
@@ -60,7 +60,7 @@ public class Sdt {
         comp.add(undeal.get(i - 1));
     }
 
-    void uncompress(Vector<Point> comp, Vector<Point> dealt) {
+    public void uncompress(Vector<Point> comp, Vector<Point> dealt) {
         Point a = (Point) comp.get(0).clone(),b=new Point();
         int i, size = comp.size();
         for (i = 1; i < size; ++i) {

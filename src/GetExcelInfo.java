@@ -34,7 +34,7 @@ public class GetExcelInfo {
                 // sheet.getRows()返回该页的总行数
                 for (int i = 1; i < sheet.getRows(); i++) {
                     // sheet.getColumns()返回该页的总列数
-                    String cellinfo=sheet.getCell(3,i).getContents();
+                    String cellinfo=sheet.getCell(8,i).getContents();
                     //System.out.println(cellinfo);
                     double tempData=Double.parseDouble(cellinfo);
                     datas.add(new Point(i,tempData));
