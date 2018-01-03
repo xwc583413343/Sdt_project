@@ -34,7 +34,7 @@ public class MixSdt implements FatherSdt{
         boolean flag=true;
 
         //save the first data
-        comp.add(undeal.get(0).clone());
+        //comp.add(undeal.get(0).clone());
         //循环处理数据
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
