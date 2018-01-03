@@ -111,7 +111,7 @@ public class test {
     public static void main(String[] args) {
 
         double m_acc=0.01;
-        double m_accArray[]={1,0.8,0.5,0.3,0.1,0.05,0.03,0.01};
+        double m_accArray[]={5,1,0.8,0.5,0.3,0.1,0.05,0.03,0.01};
         for(int i=0;i<m_accArray.length;i++){
             System.out.println("m_acc:"+m_accArray[i]);
             m_acc=m_accArray[i];
