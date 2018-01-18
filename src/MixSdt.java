@@ -26,6 +26,7 @@ public class MixSdt implements FatherSdt{
         Point pBegin=undeal.get(0).clone();//保存压缩区间段开始点
         Point pEnd=undeal.get(0).clone();//保存压缩段结束点
         Point pCurrent;//当前点
+        double pBeginY=undeal.get(0).y;
         //存储压缩区间临时点
         Vector<Point> pTempVector=new Vector<>();
         pTempVector.add(pBegin.clone());
@@ -40,6 +41,11 @@ public class MixSdt implements FatherSdt{
         for (i = 1; i < size; ++i) {
            // pTempVector.add(undeal.get(i));
             pCurrent=undeal.get(i).clone();
+            //噪声处理
+            if((pCurrent.y-pBeginY)>0.9){
+                pCurrent.y=pBeginY;
+            }
+            pBeginY=pCurrent.y;
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
                 slope1 = now_slope1;

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -44,23 +45,33 @@ public class test {
     }
     public static void sdfCal(double m_acc) {
         int i = 0;
-        Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
+        //undeal 表示带有噪声的数据 cundeal不带噪声的数据 deal处理后的数据
+        Vector<Point> undeal = new Vector<>(), cundeal=new Vector<>(),compress = new Vector<>(), dealt = new Vector<>();
         double PI = 3.14159265358979323846;
-/* sin(x)
-        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
-            double sin_y = Math.sin(x_val / 4);
-            undeal.add(new Point(i, sin_y));
-        }
 
+        //噪声函数
+        Random r=new Random();
+        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
+            double sin_y=0.0;
+            if(i%100==0){
+                sin_y= Math.sin(x_val / 4)+r.nextInt()%3;
+            }else {
+                sin_y= Math.sin(x_val / 4);
+            }
+            undeal.add(new Point(i, sin_y));
+            sin_y= Math.sin(x_val / 4);
+            cundeal.add(new Point(i,sin_y));
+        }
+/* sin(x)
         //y=-100*sinc ( 0.05*pi*x ) +100
         for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
             double sin_y = -100 * Math.sin(x_val/4) / (x_val/4);
             undeal.add(new Point(i, sin_y));
         }
-*/
+
         File file=new File("/home/xwc/workspace/Sdt_project/20170701-20171004.xls");
         undeal=GetExcelInfo.readExcel(file);
-
+*/
         int num = undeal.size();
         //System.out.println("undeal size:"+num);
         //Sdt nsdt=new Sdt(m_acc);
@@ -75,20 +86,34 @@ public class test {
         System.out.println("压缩比率:" +(float) undeal.size() / compress.size());
         nsdt.uncompress(compress, dealt);
 
-        double stdev = caculVariance(undeal, dealt);
+        double stdev = caculVariance(undeal, cundeal);
         System.out.println("压缩误差:" +df.format(stdev) );
         System.out.println();
 
     }
-    public static void sdfCalFactory(FatherSdt nsdt) {
-        int i = 0;
-        Vector<Point> undeal = new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
-        double PI = 3.14159265358979323846;
 
+    public static void creatData(Vector<Point> undeal,Vector<Point> cundeal){
+        //噪声函数
+        int i = 0;
+        double PI = 3.14159265358979323846;
+        Random r=new Random();
         for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
-            double sin_y = Math.sin(x_val / 4);
+            double sin_y=0.0;
+            if(i%100==0){
+                sin_y= Math.sin(x_val / 4)+r.nextInt()%3;
+            }else {
+                sin_y= Math.sin(x_val / 4);
+            }
             undeal.add(new Point(i, sin_y));
+            sin_y= Math.sin(x_val / 4);
+            cundeal.add(new Point(i,sin_y));
         }
+    }
+
+    public static void sdfCalFactory(FatherSdt nsdt) {
+
+        Vector<Point> undeal = new Vector<>(),cundeal=new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
+
  /* sin(x)
         //y=-100*sinc ( 0.05*pi*x ) +100
         for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
@@ -106,7 +131,7 @@ public class test {
         long endTime=System.currentTimeMillis();
         //System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
         nsdt.uncompress(compress, dealt);
-        double stdev = caculVariance(undeal, dealt);
+        double stdev = caculVariance(undeal, cundeal);
         System.out.println("原生数据量为:" + undeal.size() +"   压缩后数据量为:" +compress.size() +"     压缩比率:" +(float) undeal.size() / compress.size()+"   压缩误差:" +df.format(stdev));
     }
 
