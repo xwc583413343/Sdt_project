@@ -5,11 +5,13 @@ import java.util.Vector;
  * @version 1.0
  * @created 17-12-25
  */
-public class MixSdt implements FatherSdt{
+public class NoiseMixSdt implements FatherSdt{
     double m_Acc;    //压缩精度
+    double crf;     //压缩阀值
 
-    MixSdt(double m_Acc) {
+    NoiseMixSdt(double m_Acc,double crf) {
         this.m_Acc = m_Acc;
+        this.crf=crf;
     }
 
     public void compress(Vector<Point> undeal, Vector<Point> comp) {
@@ -39,15 +41,13 @@ public class MixSdt implements FatherSdt{
         //循环处理数据
         int size = undeal.size(), i;
         for (i = 1; i < size; ++i) {
-           // pTempVector.add(undeal.get(i));
+            // pTempVector.add(undeal.get(i));
             pCurrent=undeal.get(i).clone();
             //噪声处理
-            /*
-            if((pCurrent.y-pBeginY)>0.9){
+            if((pCurrent.y-pBeginY)>crf){
                 pCurrent.y=pBeginY;
             }
             pBeginY=pCurrent.y;
-            */
             now_slope1 = (pCurrent.y - pEnd.y - m_Acc) / (pCurrent.time - pEnd.time);
             if (now_slope1 > slope1)    //上门的斜率只能变大
                 slope1 = now_slope1;
@@ -100,7 +100,7 @@ public class MixSdt implements FatherSdt{
                     pBegin=pEnd.clone();
                     a0=a1;
                     b0=b1;
-                   // System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
+                    // System.out.println("m_Acc:"+m_Acc+"=========T0:"+T0);
                 }
                 pTempVector.clear();
                 //保存前一个节点

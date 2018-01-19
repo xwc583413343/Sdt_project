@@ -9,27 +9,6 @@ import java.util.Vector;
  * @created 17-12-20
  */
 public class test {
-    //计算方差
-    /*
-    public static double caculVariance(Vector<Point> undeal, Vector<Point> dealt) {
-        Vector<Double> resultSet = new Vector<>();//计算均值方差
-        for (int i = 0; i < undeal.size(); i++) {
-            double temp = undeal.get(i).y - dealt.get(i).y;
-            resultSet.add(temp);
-        }
-        double sum = 0.0;
-        for (Double p : resultSet) {
-            sum += p;
-        }
-        double mean = sum / resultSet.size(); //均值
-        double accum=0;
-        for (Double d : resultSet) {
-            accum += (d - mean) * (d - mean);
-        }
-        double stdev = Math.sqrt(accum / (resultSet.size() - 1)); //方差
-        return stdev;
-    }
-    */
     public static double caculVariance(Vector<Point> undeal, Vector<Point> dealt) {
         Vector<Double> resultSet = new Vector<>();//计算均值方差
         for (int i = 0; i < undeal.size(); i++) {
@@ -43,18 +22,18 @@ public class test {
         double stdev = Math.sqrt(sum/resultSet.size()); //方差
         return stdev;
     }
-    public static void sdfCal(double m_acc) {
-        int i = 0;
-        //undeal 表示带有噪声的数据 cundeal不带噪声的数据 deal处理后的数据
-        Vector<Point> undeal = new Vector<>(), cundeal=new Vector<>(),compress = new Vector<>(), dealt = new Vector<>();
-        double PI = 3.14159265358979323846;
 
+    //undeal代表带有噪声数据,cundeal噪声处理后数据,p代表噪声强度，t代表噪声频率
+    public  static void creatData(Vector<Point> undeal,Vector<Point> cundeal,int p,int t,boolean flag){
         //噪声函数
+        int i = 0;
+        double PI = 3.14159265358979323846;
+    /* sin(x)
         Random r=new Random();
         for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
             double sin_y=0.0;
-            if(i%100==0){
-                sin_y= Math.sin(x_val / 4)+r.nextInt()%3;
+            if(flag&&i%t==0){
+                sin_y= Math.sin(x_val / 4)+r.nextInt(p);
             }else {
                 sin_y= Math.sin(x_val / 4);
             }
@@ -62,95 +41,41 @@ public class test {
             sin_y= Math.sin(x_val / 4);
             cundeal.add(new Point(i,sin_y));
         }
-/* sin(x)
+
         //y=-100*sinc ( 0.05*pi*x ) +100
         for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
             double sin_y = -100 * Math.sin(x_val/4) / (x_val/4);
             undeal.add(new Point(i, sin_y));
         }
-
+    */
         File file=new File("/home/xwc/workspace/Sdt_project/20170701-20171004.xls");
-        undeal=GetExcelInfo.readExcel(file);
-*/
-        int num = undeal.size();
-        //System.out.println("undeal size:"+num);
-        //Sdt nsdt=new Sdt(m_acc);
-        LinearSdt nsdt=new LinearSdt(m_acc);
-       // DynamicSdt nsdt=new DynamicSdt(m_acc);
-        //DecimalFormat    df   = new DecimalFormat("######0.00");
-        DecimalFormat df=new DecimalFormat("####0.000000");
-        //MixSdt nsdt=new MixSdt(m_acc);
-        nsdt.compress(undeal, compress);
-
-        System.out.println("原生数据量为:" + undeal.size() +"   压缩后数据量为:" +compress.size() );
-        System.out.println("压缩比率:" +(float) undeal.size() / compress.size());
-        nsdt.uncompress(compress, dealt);
-
-        double stdev = caculVariance(undeal, cundeal);
-        System.out.println("压缩误差:" +df.format(stdev) );
-        System.out.println();
+        GetExcelInfo.readExcel(file,undeal,cundeal);
 
     }
 
-    public static void creatData(Vector<Point> undeal,Vector<Point> cundeal){
-        //噪声函数
-        int i = 0;
-        double PI = 3.14159265358979323846;
-        Random r=new Random();
-        for (double x_val = -2 * PI; x_val < 1024 * PI; ++i, x_val += 0.2) {
-            double sin_y=0.0;
-            if(i%100==0){
-                sin_y= Math.sin(x_val / 4)+r.nextInt()%3;
-            }else {
-                sin_y= Math.sin(x_val / 4);
-            }
-            undeal.add(new Point(i, sin_y));
-            sin_y= Math.sin(x_val / 4);
-            cundeal.add(new Point(i,sin_y));
-        }
-    }
+    public static void sdfCalFactory(FatherSdt nsdt,Vector<Point> undeal,Vector<Point> cundeal) {
 
-    public static void sdfCalFactory(FatherSdt nsdt) {
+        Vector<Point> compress = new Vector<>(), dealt = new Vector<>();
+        //
 
-        Vector<Point> undeal = new Vector<>(),cundeal=new Vector<>(), compress = new Vector<>(), dealt = new Vector<>();
-
- /* sin(x)
-        //y=-100*sinc ( 0.05*pi*x ) +100
-        for(double x_val=-2* PI;x_val<1024*PI;x_val+=0.2,++i) {
-            double sin_y = -100 * Math.sin(x_val/4) / (x_val/4);
-            undeal.add(new Point(i, sin_y));
-        }
-
-        File file=new File("/Users/weichaoxie/IdeaProjects/Sdt_project/20170701-20171004.xls");
-        undeal=GetExcelInfo.readExcel(file);
- */
         int num = undeal.size();
+        int num2=cundeal.size();
         DecimalFormat df=new DecimalFormat("####0.000000");
         long startTime=System.currentTimeMillis();
         nsdt.compress(undeal, compress);
         long endTime=System.currentTimeMillis();
         //System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
         nsdt.uncompress(compress, dealt);
-        double stdev = caculVariance(undeal, cundeal);
+        double stdev = caculVariance(cundeal, dealt);
         System.out.println("原生数据量为:" + undeal.size() +"   压缩后数据量为:" +compress.size() +"     压缩比率:" +(float) undeal.size() / compress.size()+"   压缩误差:" +df.format(stdev));
     }
-
-/*
-    public static void main(String[] args) {
-
+    public static void test01(){
         double m_acc=0.01;
-        double m_accArray[]={1,0.5,0.3,0.1,0.05,0.03,0.01};
-        for(int i=0;i<m_accArray.length;i++){
-            System.out.println("m_acc:"+m_accArray[i]);
-            sdfCal(m_accArray[i]);
+        double m_accArray[]={1,0.8,0.5,0.3,0.1,0.05,0.03};
 
-        }
-    }
-*/
-    public static void main(String[] args) {
+        Vector<Point> undeal = new Vector<>(),cundeal=new Vector<>();
+        creatData(undeal,cundeal,4,500,false);
 
-        double m_acc=0.01;
-        double m_accArray[]={1,0.8,0.5,0.3,0.1,0.05,0.03,0.01};
         for(int i=0;i<m_accArray.length;i++){
             System.out.println("m_acc:"+m_accArray[i]);
             m_acc=m_accArray[i];
@@ -158,12 +83,20 @@ public class test {
             LinearSdt lsdt=new LinearSdt(m_acc);
             DynamicSdt dsdt=new DynamicSdt(m_acc);
             MixSdt msdt=new MixSdt(m_acc);
-            sdfCalFactory(sdt);
-            sdfCalFactory(lsdt);
-            sdfCalFactory(dsdt);
-            sdfCalFactory(msdt);
+            NoiseMixSdt nmsdt=new NoiseMixSdt(m_acc,1000);
 
+            sdfCalFactory(sdt,undeal,cundeal);
+            sdfCalFactory(lsdt,undeal,cundeal);
+            sdfCalFactory(dsdt,undeal,cundeal);
+            sdfCalFactory(msdt,undeal,cundeal);
+            sdfCalFactory(nmsdt,undeal,cundeal);
         }
+
+    }
+
+    public static void main(String[] args) {
+        test01();
+
     }
 
 
